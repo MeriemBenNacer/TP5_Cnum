@@ -9,7 +9,7 @@
 #include <float.h>
 #include <limits.h>
 
-void set_GB_operator_colMajor_poisson1D(double* AB, int* lab, int *la, int *kv);
+void set_GB_operator_colMajor_poisson1D(double* AB, int* lab, int *la, int *kv); //fait
 void set_GB_operator_colMajor_poisson1D_Id(double* AB, int* lab, int *la, int *kv);
 void set_dense_RHS_DBC_1D(double* RHS, int* la, double* BC0, double* BC1);
 void set_analytical_solution_DBC_1D(double* EX_SOL, double* X, int* la, double* BC0, double* BC1);

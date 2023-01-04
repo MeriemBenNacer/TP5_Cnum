@@ -18,7 +18,7 @@ int main(int argc,char *argv[])
   int info;
   int NRHS;
   double T0, T1;
-  double *RHS, *EX_SOL, *X;
+  double *RHS, *RHS1, *EX_SOL, *X;
   double **AAB;
   double *AB;
 
@@ -32,6 +32,7 @@ int main(int argc,char *argv[])
 
   printf("--------- Poisson 1D ---------\n\n");
   RHS=(double *) malloc(sizeof(double)*la);
+  RHS1=(double *) malloc(sizeof(double)*la);
   EX_SOL=(double *) malloc(sizeof(double)*la);
   X=(double *) malloc(sizeof(double)*la);
 
@@ -53,7 +54,21 @@ int main(int argc,char *argv[])
 
   set_GB_operator_colMajor_poisson1D(AB, &lab, &la, &kv);
 
-  // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
+   write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "AB.dat");
+
+// exo4, question1 
+
+cblas_dgbmv(CblasColMajor, CblasConjTrans, la, la, kl, ku, 1.0, AB+1, lab, EX_SOL, 1, 0.0, RHS1, 1);
+
+write_vec(RHS1, &la, "dgbvm.dat");
+
+
+//exo4 question 2
+
+cblas_daxpy(la, -1, RHS1, 1, RHS, 1);
+double norm = cblas_dnrm2(la, RHS, 1);
+
+printf("la validation de dgbmv()= %f\n", norm);
 
   printf("Solution with LAPACK\n");
   /* LU Factorization */
