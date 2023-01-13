@@ -5,6 +5,7 @@
 /******************************************/
 #include "lib_poisson1D.h"
 #include "atlas_headers.h"
+#include<time.h>
 
 int main(int argc,char *argv[])
 /* ** argc: Nombre d'arguments */
@@ -70,6 +71,7 @@ double norm = cblas_dnrm2(la, RHS, 1);
 
 printf("la validation de dgbmv()= %f\n", norm);
 
+ 
   printf("Solution with LAPACK\n");
   /* LU Factorization */
   info=0;
@@ -78,12 +80,21 @@ printf("la validation de dgbmv()= %f\n", norm);
 
   /* LU for tridiagonal matrix  (can replace dgbtrf_) */
   // ierr = dgbtrftridiag(&la, &la, &kl, &ku, AB, &lab, ipiv, &info);
+    
+    set_GB_operator_colMajor_poisson1D(AB,&lab, &la, &kv);
+    set_dense_RHS_DBC_1D(RHS, &la, &T0, &T1);
+    clock_t begin = clock();
+    info= LAPACKE_dgbsv(LAPACK_COL_MAJOR, la, kl, ku, NRHS, AB, lab, ipiv, RHS, la);
+    clock_t end = clock();
+
+    double diff= (double) (end-begin)/ CLOCKS_PER_SEC;
+    printf("The execution time is: %f\n ", diff); 
 
   // write_GB_operator_colMajor_poisson1D(AB, &lab, &la, "LU.dat");
   
   /* Solution (Triangular) */
   if (info==0){
-    dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info);
+    //dgbtrs_("N", &la, &kl, &ku, &NRHS, AB, &lab, ipiv, RHS, &la, &info);
     if (info!=0){printf("\n INFO DGBTRS = %d\n",info);}
   }else{
     printf("\n INFO = %d\n",info);
@@ -95,6 +106,14 @@ printf("la validation de dgbmv()= %f\n", norm);
   write_xy(RHS, X, &la, "SOL.dat");
 
   /* Relative forward error */
+  temp = cblas_ddot(la, RHS, 1, RHS,1);
+  temp = sqrt(temp);
+  cblas_daxpy(la, -1.0, RHS, 1, EX_SOL, 1);
+  relres = cblas_ddot(la, EX_SOL, 1, EX_SOL,1);
+  relres = sqrt(relres);
+  relres = relres / temp;
+  
+  printf("\nThe relative forward error is relres = %e\n",relres);
   // TODO : Compute relative norm of the residual
   
   printf("\nThe relative forward error is relres = %e\n",relres);
