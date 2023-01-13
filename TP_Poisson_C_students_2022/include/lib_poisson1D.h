@@ -8,6 +8,7 @@
 #include <math.h>
 #include <float.h>
 #include <limits.h>
+#include "atlas_headers.h"
 
 void set_GB_operator_colMajor_poisson1D(double* AB, int* lab, int *la, int *kv); //fait
 void set_GB_operator_colMajor_poisson1D_Id(double* AB, int* lab, int *la, int *kv);
@@ -21,3 +22,11 @@ void write_vec(double* vec, int* la, char* filename);
 void write_xy(double* vec, double* x, int* la, char* filename);
 int indexABCol(int i, int j, int *lab);
 int dgbtrftridiag(int *la, int *n, int *kl, int *ku, double *AB, int *lab, int *ipiv, int *info);
+void eig_poisson1D(double* eigval, int *la);
+double eigmax_poisson1D(int *la);
+double eigmin_poisson1D(int *la);
+double richardson_alpha_opt(int *la);
+void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite);
+void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv);
+void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv);
+void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite);
